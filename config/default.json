@@ -1,0 +1,4 @@
+{
+    "mongoURI": "mongodb+srv://utkrishtsingh5:dB1Txa5NbWs3PlU6@cluster0.2xe5cfi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "jwtsecret": "Trinity"
+}
