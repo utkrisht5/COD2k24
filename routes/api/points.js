@@ -13,7 +13,8 @@ const TotalPoints = require('../../models/TotalPoints');
 router.get('/', auth, async (req, res) => {
   try {
     console.log(req.team.id);
-    const eval = await Eval.find({ team: req.team.id });
+    const name = await Team.findById(req.team.id);
+    const eval = await Eval.find({ teamName: name.teamName });
     res.json(eval);
     console.log('Result of eval');
     console.log(eval);
@@ -26,7 +27,7 @@ router.get('/', auth, async (req, res) => {
 router.get('/leaderboard', auth, async (req, res) => {
   try {
     console.log('sdfasd');
-    const result = await TotalPoints.find();
+    const result = await TotalPoints.find().sort({ points: -1 });
     console.log(result);
     res.json(result);
   } catch (err) {
