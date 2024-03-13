@@ -12,10 +12,10 @@ const TotalPoints = require('../../models/TotalPoints');
 const FormLink = require('../../models/FormLink');
 
 router.post('/', auth, async (req, res) => {
-    console.log('dfasdfs');
+  console.log('dfasdfs');
   const { teamName, day, points } = req.body;
   try {
-    console.log("hsadfasdfsd");
+    console.log('hsadfasdfsd');
     let team = await Team.findOne({ teamName });
     if (!team) {
       return res.status(400).json({ errors: [{ msg: 'Invalid Team' }] });
@@ -24,30 +24,29 @@ router.post('/', auth, async (req, res) => {
     if (re) {
       let p = re.points;
       p = parseInt(p);
-      const ev = new Eval({ teamName: teamName, day: day, points: points });
-      await ev.save();
-      let point = await TotalPoints.findOne({ teamName });
+      await re.updateOne({ points: points });
+      let pi = await TotalPoints.findOne({ teamName });
+      let point = pi.points;
       point = parseInt(point);
       point -= p;
-      points = parseInt(points);
-      point += points;
-      point = toString(point);
-      const r = new TotalPoints({teamName: teamName, points: point});
-      await r.save();
-    }else{
-        const ev = new Eval({teamName: teamName, day: day, points: points});
-        await ev.save();
-        let r = await TotalPoints.findOne({teamName: teamName});
-        if(r){
-            let point = parseInt(r.points);
-            points = parseInt(points);
-            point += points;
-            const re = new TotalPoints({teamName: teamName, points: point});
-            await re.save();
-        }else{
-            const re = new TotalPoints({teamName: teamName, points: points});
-            await re.save();
-        }
+      let pointsInt = parseInt(points);
+      point += pointsInt;
+      let pointStr = point.toString();
+      await pi.updateOne({ points: pointStr });
+    } else {
+      const ev = new Eval({ teamName: teamName, day: day, points: points });
+      await ev.save();
+      let r = await TotalPoints.findOne({ teamName: teamName });
+      if (r) {
+        let point = parseInt(r.points);
+        let pointsInt = parseInt(points);
+        point += pointsInt;
+        let pointStr = point.toString();
+        await r.updateOne({ points: pointStr });
+      } else {
+        const re = new TotalPoints({ teamName: teamName, points: points });
+        await re.save();
+      }
     }
   } catch (err) {
     console.error(err.message);
@@ -55,29 +54,28 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-
 router.post('/form', auth, async (req, res) => {
-    const {day, formLink} = req.body;
-    try {
-        let result = await FormLink.findOne({day});
-        if(result){
-            await FormLink.updateOne({formLink: formLink});
-        }else{
-            const re = new FormLink({day: day, formLink: formLink});
-            await re.save();
-        }
-    } catch (error) {
-        console.log(error.msg);
+  const { day, formLink } = req.body;
+  try {
+    let result = await FormLink.findOne({ day });
+    if (result) {
+      await FormLink.updateOne({ formLink: formLink });
+    } else {
+      const re = new FormLink({ day: day, formLink: formLink });
+      await re.save();
     }
-})
+  } catch (error) {
+    console.log(error.msg);
+  }
+});
 
 router.get('/form', auth, async (req, res) => {
-    try{
-        let result = await FormLink.find();
-        res.json(result);
-    } catch(err){
-        console.log(err.msg);
-    }
-})
+  try {
+    let result = await FormLink.find();
+    res.json(result);
+  } catch (err) {
+    console.log(err.msg);
+  }
+});
 
 module.exports = router;
